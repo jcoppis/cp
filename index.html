@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Chicas Programadoras</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/tokyo-night-dark.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Introducción a la creación de APIs</h1>
+				</section>
+				<section>
+					<h2>Descripción</h2>
+					<p>
+						En este curso utilizaremos <a href="https://expressjs.com" target="_blank">express.js</a>, es una libreria que nos facilitará varias cosas.
+					</p>
+				</section>
+				<section>
+					<section>
+						<h2>Requerimientos</h2>
+						<p>
+							Para la creación de la <a href="https://es.wikipedia.org/wiki/API" target="_blank">APIs</a> necesitaremos
+						</p>
+						<ol>
+							<li>
+								Instalar <a href="https://code.visualstudio.com">Visual Studio Code</a>
+								<ul>
+									<li>En Visual Studio Code instalar: <a href="https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client" target="_blank">Thunder Client</a></li>
+								</ul>
+							</li>
+							<li>Instalar <a href="https://nodejs.org/dist/v18.18.0/node-v18.18.0-x64.msi" target="_blank">Node.js</a></li>
+							<li>Crear una carpeta de proyecto</li>
+						</ol>
+					</section>
+					<section>
+						<ol start="4">
+							<li>Ir a la carpeta del proyecto</li>
+							<li>
+								Desde alguna terminal ejecutar:
+								<pre><code class="shell" data-trim data-noescape>
+									npm init
+									npm install express nodemon
+								</code></pre>
+							</li>
+							<li>
+								Modificar el archivo <strong>package.json</strong> para que quede asi:
+								<pre><code class="json" data-trim data-noescape data-line-numbers="5,8-9">
+									{
+										"name": "servidor",
+										"version": "1.0.0",
+										"description": "",
+										"main": "server.js",
+										"scripts": {
+											"test": "echo \"No test specified\" && exit 1",
+											"start": "node server.js",
+											"dev": "nodemon"
+										},
+										...
+									}
+								</code></pre>
+							</li>
+						</ol>
+					</section>
+					<section>
+						<ol start="7">
+							<li>
+								Crear un archivo <strong>server.js</strong> con el siguiente contenido:
+								<pre><code class="js" data-trim data-noescape data-line-numbers>
+									const express = require('express');
+									const app = express();
+									const port = 4000;
+
+									app.get('/', (req, res) => {
+										res.send('Hello World!');
+									});
+
+									app.listen(port, () => {
+										console.log(`Server iniciado en puerto: ${puerto}`);
+									});
+								</code></pre>
+							</li>
+						</ol>
+					</section>
+				</section>
+				<section>
+					<h2>Ejemplos APIs</h2>
+					<ul>
+						<li><a href="https://rickandmortyapi.com" target="_blank">Rick & Morty</a></li>
+						<li><a href="https://pokeapi.co" target="_blank">Pokemon</a></li>
+						<li><a href="https://randomuser.me" target="_blank" about>Random User</a></li>
+					</ul>
+				</section>
+				<section>
+					<section>
+						<h2>Programas Opcionales</h2>
+					</section>
+					<section>
+						<h4>Base de datos</h4>
+						<p>
+							Para las clases utilizaremos <a href="https://pocketbase.io">pocketbase</a>
+						</p>
+						<p>
+							Es una base de datos basada en <a href="https://www.sqlite.org/index.html">sqlite</a> (en archivo de texto), que solo consta de un ejecutable.
+							Brinda, autorización, autenticación, websocket (para actualización en tiempo real) y un <a href="https://es.wikipedia.org/wiki/Asignaci%C3%B3n_objeto-relacional">ORM</a>
+						</p>
+					</section>
+					<section>
+						<ol>
+							<li>Ir a la carpeta del proyecto</li>
+							<li>
+								Desde alguna terminal ejecutar:
+								<pre><code class="shell" data-trim data-noescape>
+									npm install pocketbase
+								</code></pre>
+							</li>
+							<li>
+								cuando se quiera usar solo se necesita hacer:
+								<pre><code class="js" data-trim data-noescape data-line-numbers>
+									...
+									const PocketBase = require("pocketbase");
+									const host = "localhost";
+									const port = "8090";
+									const pb = new PocketBase(`${host}:${port}`);
+									...
+								</code></pre>
+							</li>
+						</ol>
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<!-- <script src="plugin/markdown/markdown.js"></script> -->
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [
+					// RevealMarkdown,
+					RevealHighlight,
+					RevealNotes,
+					RevealZoom
+				],
+				// markdown: {
+				// 	smartypants: true
+				// }
+			});
+		</script>
+	</body>
+</html>

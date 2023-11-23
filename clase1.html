@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>Chicas Programadoras</title>
+
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/black.css" />
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/tokyo-night-dark.css" />
+    <link rel="stylesheet" href="dist/micss.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>Clase 1</h1>
+          <h2>Introducción a la arquitectura en capas</h2>
+        </section>
+        <section>
+          <h2>Que es la arquitectura en capas</h2>
+          <p>
+            La arquitectura de capas es un patrón que se utiliza en desarrollo
+            de software donde los roles y responsabilidades dentro de la
+            aplicación (app) son separadas en capas.
+          </p>
+        </section>
+        <section>
+          <h2>Objetivos</h2>
+          <p>
+            Uno de los objetivos de la arquitectura de capas es separar
+            responsabilidades entre componentes.
+          </p>
+          <p>
+            Otro objetivo es organizar las capas para que ellas lleven a cabo su
+            labor especifica dentro del app.
+          </p>
+        </section>
+        <section>
+          <h2>Estructura</h2>
+          <h3>Rutas</h3>
+          <p>
+            La capa de rutas maneja la interfaz de programación de aplicaciones
+            (API por sus siglas en inglés). Su único trabajo es retornar la
+            respuesta del servidor.
+          </p>
+        </section>
+        <section>
+          <h3>Controladores</h3>
+          <p>
+            La capa de control se encarga que los servicios que usamos
+            posteriormente, tengan los datos necesarios y en caso contrario
+            retornara un mensaje de error.
+          </p>
+        </section>
+        <section>
+          <h3>Servicios</h3>
+          <p>
+            La capa de servicio maneja la lógica de negocios de la app.
+            Significa que los datos son transformados o calculados para cumplir
+            con los requerimientos de los modelos de la base de datos antes de
+            ser enviados al servidor.
+          </p>
+        </section>
+        <section>
+          <h3>Abstraccion de Datos</h3>
+          <p>
+            La capa de base de datos (DAL por sus siglas en inglés) tiene acceso
+            a la base de datos para crear, editar, o borrar datos. Aquí es donde
+            se maneja la lógica relacionada a las solicitudes y respuestas del
+            servidor. Si la base de datos no esta directamente conectada a tu
+            software, en esta capa puedes incluir los protocolos de
+            transferencia de hipertexto, ó solicitud http (por sus siglas en
+            inglés) al servidor.
+          </p>
+        </section>
+        <section>
+          <section>
+            <h3>Estructura del Proyecto</h3>
+            <p
+              style="
+                text-align: left;
+                font-family: Verdana, Geneva, Tahoma, sans-serif;
+                font-size: 2rem;
+              "
+            >
+              /src<br />
+              ├── routes<br />
+              │   ├── <a href="#/7/2">index.js</a><br />
+              │   ├── <a href="#/7/3">userRouter.js</a><br />
+              │   └── addressRouter.js<br />
+              ├── controllers<br />
+              │   └── <a href="#/7/4">userController.js</a><br />
+              ├── services<br />
+              │   ├── <a href="#/7/5">userService.js</a><br />
+              │   └── addressService.js<br />
+              ├── models <br />
+              │   ├── <a href="#/7/5">userService.js</a><br />
+              │   └── addressModel.js<br />
+              ├── <a href="#/7/1">server.js</a><br />
+              └── package.json<br />
+            </p>
+          </section>
+          <section>
+            <p>src/server.js</p>
+            <pre><code class="js" data-trim data-noescape data-line-numbers="5,7,9">
+              let express = require("express");
+              let bodyParser = require("body-parser");
+              let servidor = express();
+              let puerto = 3000;
+              let rutas = require('./rutas/index');
+              
+              servidor.use(bodyParser.json());
+              servidor.use(bodyParser.urlencoded({ extended: true }));
+              servidor.use(rutas);
+              
+              servidor.listen(puerto, () => {
+                console.log(`Server iniciado en puerto: ${puerto}`);
+              });
+            </code></pre>
+          </section>
+          <section>
+            <p>src/routes/index.js</p>
+            <pre><code data-id="code-animation" class="js" data-trim data-noescape data-line-numbers="1-3,5,6,10">
+              const express = require('express');
+              const router = express.Router();
+              const userRouter = require('./routes/userRouter');
+              const addressRouter = require('./routes/addressRouter')
+              
+              router.use("/users", userRouter);
+              router.use("/addresses", addressRouter);
+              ...
+              
+              module.exports = router;
+            </code></pre>
+          </section>
+          <section>
+            <p>src/routes/user.js</p>
+            <pre><code data-id="code-animation" class="js" data-trim data-noescape data-line-numbers="3,5">
+              const express = require('express');
+              const router = express.Router();
+              const userController = require('../controller/userController');
+              
+              router.get("/info/:email", userController.getInfoByEmail);
+              ...
+              
+              module.exports = router;
+            </code></pre>
+          </section>
+          <section>
+            <p>src/controllers/userController.js</p>
+            <pre><code data-id="code-animation" class="js" data-trim data-noescape data-line-numbers style="height: 100%;">
+              // usuarios
+              const userService = require("../services/user");
+              // direcciones
+              const addressService = require("../services/address");
+              const { validateEmail } = require("../utils/index");
+
+              async function getInfoByEmail(req, res) {
+                // => let { email } = req.params;
+                let email = req.params.email; 
+              
+                if (!validateEmail(email)) {
+                  res.status(422).send("el email no es valido");
+                  return;
+                }
+              
+                const user = await userService.findUserByEmail(email);
+
+                if (!user) {
+                  res.status(400).send("El usuario no existe");
+                  return;
+                }
+
+                const address = await addressService
+                  .findAddressByUserId(user.id);
+                return res.json({
+                  name: user.name,
+                  email: user.email,
+                  address: `${address.city}, ${address.street}`
+                });
+              }              
+              
+              module.exports = {
+                getInfoByEmail,
+                ...
+              };
+            </code></pre>
+          </section>
+          <section>
+            <p>src/services/userService.js</p>
+            <pre><code data-id="code-animation" class="js" data-trim data-noescape data-line-numbers style="height: 100%;">
+              const userModel = require("../models/user");
+
+              async function findUser(email) {
+                const user = await userModel.findUser(email);
+                return user;
+              }
+              ...
+
+              module.exports = {
+                findUser,
+                ...
+              };
+            </code></pre>
+          </section>
+          <section>
+            <p>src/models/userModel.js</p>
+            <pre><code data-id="code-animation" class="js" data-trim data-noescape data-line-numbers style="height: 100%;">
+              const userStore = require("../store/user");
+
+              async function findUser(email) {
+                ...
+                return user;
+              }
+              ...
+
+              module.exports = {
+                findUser,
+                ...
+              };
+            </code></pre>
+          </section>
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <!-- <script src="plugin/markdown/markdown.js"></script> -->
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [
+          // RevealMarkdown,
+          RevealHighlight,
+          RevealNotes,
+          RevealZoom,
+        ],
+        // markdown: {
+        // 	smartypants: true
+        // }
+      });
+    </script>
+  </body>
+</html>

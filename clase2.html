@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <title>Chicas Programadoras</title>
+
+    <link rel="stylesheet" href="dist/reset.css" />
+    <link rel="stylesheet" href="dist/reveal.css" />
+    <link rel="stylesheet" href="dist/theme/black.css" />
+
+    <!-- Theme used for syntax highlighted code -->
+    <link rel="stylesheet" href="plugin/highlight/tokyo-night-dark.css" />
+    <link rel="stylesheet" href="dist/micss.css" />
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides">
+        <section>
+          <h1>Clase 2</h1>
+          <h2>Base de datos</h2>
+        </section>
+        <section>
+          <h2>Objetivos</h2>
+          <p>
+            Instalar y configurar una base de datos simple para no tener que depender de un store estatico.
+          </p>
+        </section>
+        <section>
+          <p>
+            Para la demastracion utilizaremos <a href="https://pocketbase.io">pocketbase</a>
+          </p>
+          <p>
+            Es una base de datos basada en <a href="https://www.sqlite.org/index.html">sqlite</a> (en archivo de texto), que solo consta de un ejecutable.<br />
+            Brinda, autorización, autenticación, websocket (para actualización en tiempo real) y un <a href="https://es.wikipedia.org/wiki/Asignaci%C3%B3n_objeto-relacional">ORM</a>
+          </p>
+        </section>
+        <section>
+          <h2>Instalación Y Configuración</h2>
+          <ol>
+            <li>Ir a la carpeta del proyecto</li>
+            <li>
+              Desde alguna terminal ejecutar:
+              <pre><code class="shell" data-trim data-noescape>
+                npm install pocketbase
+              </code></pre>
+            </li>
+            <li>
+              cuando se quiera usar solo se necesita hacer:
+              <pre><code class="js" data-trim data-noescape data-line-numbers>
+                ...
+                const PocketBase = require("pocketbase");
+                const host = "localhost";
+                const port = "8090";
+                const pb = new PocketBase(`${host}:${port}`);
+                ...
+              </code></pre>
+            </li>
+          </ol>
+        </section>
+        <section>
+          <section>
+            <h2>Ejemplo de uso</h2>
+            <h3>Antes</h3>
+            <p>src/models/userModel.js</p>
+            <pre><code data-id="code-animation" class="js" data-trim data-noescape data-line-numbers style="height: 100%;">
+              const userStore = require("../store/user");
+
+              async function findUser(email) {
+                ...
+                return user;
+              }
+              ...
+
+              module.exports = {
+                findUser,
+                ...
+              };
+            </code></pre>
+          </section>
+          <section>
+            <h2>Ejemplo de uso</h2>
+            <h3>Después</h3>
+            <p>src/models/userModel.js</p>
+            <pre><code data-id="code-animation" class="js" data-trim data-noescape data-line-numbers style="height: 100%;">
+              const PocketBase = require("pocketbase/cjs");
+              const pb = new PocketBase("http://127.0.0.1:8090");
+
+              async function findUser(email) {
+                const user = await pb.collection('users').getList(1, 1, {
+                  filter: `email=${email}`
+                });
+                return user;
+              }
+              ...
+
+              module.exports = {
+                findUser,
+                ...
+              };
+            </code></pre>
+          </section>
+        </section>
+        <section>
+          <h2>Servir archivos mediante una carpeta</h2>
+          <p>src/server.js</p>
+          <pre><code class="js" data-trim data-noescape data-line-numbers="11">
+            let express = require("express");
+            let bodyParser = require("body-parser");
+            let servidor = express();
+            let path = require("path");
+            let puerto = 3000;
+            let rutas = require('./rutas/index');
+            
+            servidor.use(bodyParser.json());
+            servidor.use(bodyParser.urlencoded({ extended: true }));
+            servidor.use(rutas);
+
+            servidor.use('/public', express.static(path.join(__dirname, 'public')));
+            
+            servidor.listen(puerto, () => {
+              console.log(`Server iniciado en puerto: ${puerto}`);
+            });
+          </code></pre>
+        </section>
+      </div>
+    </div>
+
+    <script src="dist/reveal.js"></script>
+    <script src="plugin/notes/notes.js"></script>
+    <!-- <script src="plugin/markdown/markdown.js"></script> -->
+    <script src="plugin/highlight/highlight.js"></script>
+    <script src="plugin/zoom/zoom.js"></script>
+    <script>
+      // More info about initialization & config:
+      // - https://revealjs.com/initialization/
+      // - https://revealjs.com/config/
+      Reveal.initialize({
+        hash: true,
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [
+          // RevealMarkdown,
+          RevealHighlight,
+          RevealNotes,
+          RevealZoom,
+        ],
+        // markdown: {
+        // 	smartypants: true
+        // }
+      });
+    </script>
+  </body>
+</html>
