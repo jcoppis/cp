@@ -1,0 +1,24 @@
+#nav-clases {
+  display: flex;
+  position: absolute;
+  z-index: 9999;
+  gap: 20px;
+  right: 0;
+}
+
+#nav-clases > a {
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-family: var(--r-heading-font);
+  color: var(--r-link-color);
+}
+
+#nav-clases > a:hover {
+  color: var(--r-link-color-hover);
+}
+
+#nav-clases > .selected {
+  text-decoration: none;
+  font-weight: bolder;
+  color: var(--r-link-color-dark);
+}
